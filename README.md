@@ -155,18 +155,6 @@ docker compose exec bot ./audio_ctl.sh disable-loopback
   </tr>
 </table>
 
-## Branding
-
-The project includes two logo variants:
-
-- [Logo with background](.github/assets/logo.png) for the Discord application icon,
-  bot avatar, and the `/join` and `/status` embed thumbnails.
-- [Transparent logo](.github/assets/logo-nobg.png) for the README header and layouts
-  that supply their own background.
-
-Embed thumbnails load the logo from this repository on GitHub. Set the application
-icon and bot avatar manually in the Discord Developer Portal when setting up your bot.
-
 ## Configuration
 
 | Variable | Default | Meaning |
