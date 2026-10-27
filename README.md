@@ -1,6 +1,20 @@
+<div align="center">
+
 # Discord Speaker
 
-**Route any application's audio to “Discord Speaker” and hear it in your Discord voice channel.**
+**Your desktop audio, in your Discord voice channel.**
+
+Stream Spotify, your browser, media players, and games through a dedicated virtual audio output.
+
+**Linux** · **PipeWire** · **Docker Compose** · **48 kHz stereo**
+
+[Quick start](#quick-start) · [Audio routing](#audio-routing) · [Commands](#commands) · [Demos](#demos) · [Configuration](#configuration) · [Troubleshooting](#operations-and-troubleshooting)
+
+</div>
+
+---
+
+## How it works
 
 Discord Speaker creates a virtual audio output on your Linux desktop and streams
 its monitor to Discord as 48 kHz stereo audio. Spotify is an easy example: play
@@ -9,30 +23,40 @@ playback. The same workflow works with Firefox, Chromium, VLC, MPV, games, or
 multiple applications at once.
 
 ```text
-Spotify / browser / media player / game
-                  |
-                  v
-       “Discord Speaker” virtual output
-                  |
-                  v
-        FFmpeg -> Discord bot -> voice channel
+Spotify / Browser / Media player / Game
+                  │
+                  ▼
+       Discord Speaker virtual output
+                  │
+                  ▼
+                FFmpeg
+                  │
+                  ▼
+        Discord bot → Voice channel
 ```
 
-The bot captures live desktop playback. It needs no Spotify API credentials,
-track URLs, or service-specific downloaders. It does not start playback for you.
+- **Share any app.** Route one application or mix several into the same stream.
+- **Skip music-service credentials.** No Spotify API keys, track URLs, or service-specific downloaders.
+- **Listen locally too.** Enable optional monitoring on your speakers or headphones.
+
+> **Live playback:** The bot captures desktop audio. Start playback in the application you want to share.
 
 ## Requirements
 
-- A Linux desktop with PipeWire, pipewire-pulse, and WirePlumber running.
-- Docker Engine with Docker Compose v2 or later.
-- A Discord bot token and permission to add the bot to your server.
-- Optional: `pavucontrol` to choose an output separately for each application.
+| Requirement | Details |
+| :--- | :--- |
+| Linux desktop | PipeWire, pipewire-pulse, and WirePlumber running |
+| Docker | Docker Engine with Docker Compose v2 or later |
+| Discord bot | A bot token and permission to add the bot to your server |
+| Volume mixer (optional) | `pavucontrol` for per-application output selection |
 
 The container includes Python, FFmpeg, libopus, and `pactl`. The desktop apps and
 audio server run on the host. This setup targets native Linux Docker Engine;
 a VPS needs its own audio source or a separate transport from your desktop.
 
-## Discord bot setup
+## Quick start
+
+### 1. Set up your Discord bot
 
 1. Create an application and bot in the [Discord Developer Portal](https://discord.com/developers/applications).
 2. Copy the bot token into `.env` as described below. Keep it private.
@@ -43,9 +67,9 @@ a VPS needs its own audio source or a separate transport from your desktop.
    **Speak**, then add the bot to your server. Channel overrides must permit it
    to view and connect to the intended voice channel.
 
-## Run with Docker
+### 2. Configure and launch Docker
 
-From the repository root:
+For a new setup, run from the repository root. Keep your existing `.env` if you have already configured it:
 
 ```bash
 cp .env.example .env
@@ -60,7 +84,7 @@ docker compose logs -f bot
 The token is passed at runtime and excluded from Git and the Docker build
 context. Avoid running a second copy of the bot with the same token.
 
-## Example: share Spotify
+### 3. Share your first audio
 
 1. Join a Discord voice channel and run `/join`.
 2. Start playing music in the desktop Spotify app.
@@ -71,7 +95,9 @@ context. Avoid running a second copy of the bot with the same token.
 For a shortcut, use `/route_spotify` while music is playing. You can also run
 `/route_app application:spotify`.
 
-## Route anything else
+## Audio routing
+
+### Route any application
 
 For Firefox, VLC, MPV, a game, or another desktop app, start its playback and
 choose **Discord Speaker** as that app's output in your volume mixer. All apps
@@ -84,6 +110,8 @@ Playback must be active for a stream to be discoverable. Apps with native
 PipeWire routing may need your desktop's PipeWire graph/mixer rather than the
 PulseAudio app list.
 
+### Listen locally
+
 By default, routed audio plays in Discord only. To hear it locally as well:
 
 ```bash
@@ -95,7 +123,7 @@ docker compose exec bot ./audio_ctl.sh disable-loopback
 ## Commands
 
 | Slash command | Prefix command | Action |
-| --- | --- | --- |
+| :--- | :--- | :--- |
 | `/join [channel]` | `!join` | Join a voice channel and start streaming the virtual output |
 | `/leave` | `!leave` | Stop streaming and disconnect |
 | `/status` | `!status` | Show voice and audio status; slash status lists routed apps |
@@ -105,26 +133,29 @@ docker compose exec bot ./audio_ctl.sh disable-loopback
 
 ## Demos
 
-### Join a voice channel
-
-![Demo of joining a Discord voice channel](.github/assets/Join.gif)
-
-### Stream audio
-
-![Demo of streaming audio to Discord](.github/assets/Audio.gif)
-
-### Check status
-
-![Demo of checking the bot's status](.github/assets/Status.gif)
-
-### Leave a voice channel
-
-![Demo of leaving a Discord voice channel](.github/assets/Leave.gif)
+<table>
+  <tr>
+    <th width="50%">Join a voice channel</th>
+    <th width="50%">Stream audio</th>
+  </tr>
+  <tr>
+    <td><img src=".github/assets/Join.gif" alt="Demo of joining a Discord voice channel" width="480"></td>
+    <td><img src=".github/assets/Audio.gif" alt="Demo of streaming audio to Discord" width="480"></td>
+  </tr>
+  <tr>
+    <th>Check status</th>
+    <th>Leave a voice channel</th>
+  </tr>
+  <tr>
+    <td><img src=".github/assets/Status.gif" alt="Demo of checking the bot's status" width="480"></td>
+    <td><img src=".github/assets/Leave.gif" alt="Demo of leaving a Discord voice channel" width="480"></td>
+  </tr>
+</table>
 
 ## Configuration
 
 | Variable | Default | Meaning |
-| --- | --- | --- |
+| :--- | :--- | :--- |
 | `DISCORD_BOT_TOKEN` | Required | Discord bot token; keep in local `.env` |
 | `SINK_NAME` | `DiscordSpeaker` | Internal sink name; its monitor is `<name>.monitor` |
 | `AUTO_CREATE_SINK` | `true` | Create the virtual output when the bot connects |
@@ -138,6 +169,8 @@ host audio restart. The process runs without root privileges, with a read-only
 root filesystem and a small writable `/tmp`.
 
 ## Operations and troubleshooting
+
+### Everyday operations
 
 ```bash
 # The desktop audio socket must exist before starting.
@@ -156,6 +189,8 @@ docker compose up -d --build
 # Stop the bot.
 docker compose down
 ```
+
+### Troubleshooting
 
 - **Audio connection refused:** verify pipewire-pulse is running in your desktop
   session and that the runtime directory and UID/GID match. This setup uses
@@ -187,7 +222,7 @@ Dockerfile           Runtime image
 compose.yaml         Host audio integration and runtime configuration
 .env.example         Shareable configuration template
 .github/workflows/   Syntax checks, routing tests, and Docker build
-tests/              Audio routing regression tests
+tests/               Audio routing regression tests
 ```
 
 ```bash
