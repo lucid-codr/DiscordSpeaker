@@ -33,6 +33,7 @@ TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 SINK_NAME = os.getenv("SINK_NAME", "DiscordSpeaker")
 AUTO_CREATE_SINK = os.getenv("AUTO_CREATE_SINK", "true").lower() in ("true", "1", "yes")
 COMMAND_PREFIX = os.getenv("COMMAND_PREFIX", "!")
+LOGO_URL = "https://raw.githubusercontent.com/lucid-codr/DiscordSpeaker/main/.github/assets/logo.png"
 
 if not TOKEN or TOKEN.startswith("YOUR_"):
     logger.error("DISCORD_BOT_TOKEN is missing or not configured in .env!")
@@ -308,6 +309,7 @@ async def slash_join(
         description=f"Streaming audio from **{SINK_NAME}** into **{target_channel.name}**",
         color=0x5865F2,
     )
+    embed.set_thumbnail(url=LOGO_URL)
     embed.add_field(name="Connected Channel", value=target_channel.name, inline=True)
     embed.add_field(name="Volume", value=f"{int(bot.current_volume * 100)}%", inline=True)
     embed.add_field(name="Active App(s)", value=apps_text, inline=False)
@@ -346,6 +348,7 @@ async def slash_status(interaction: discord.Interaction):
         title="📊 Discord Speaker Status",
         color=0x3498DB,
     )
+    embed.set_thumbnail(url=LOGO_URL)
     embed.add_field(
         name="PipeWire Sink",
         value=f"✅ `{SINK_NAME}` (Active)" if sink_ok else f"❌ `{SINK_NAME}` (Inactive)",

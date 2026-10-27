@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src=".github/assets/logo-nobg.png" alt="Discord Speaker logo" width="180">
+
 # Discord Speaker
 
 **Your desktop audio, in your Discord voice channel.**
@@ -59,6 +61,7 @@ a VPS needs its own audio source or a separate transport from your desktop.
 ### 1. Set up your Discord bot
 
 1. Create an application and bot in the [Discord Developer Portal](https://discord.com/developers/applications).
+   Use [logo.png](.github/assets/logo.png) as the application icon and bot avatar.
 2. Copy the bot token into `.env` as described below. Keep it private.
 3. Enable **Message Content Intent** on the Bot page: this bot enables that intent
    for its fallback `!` commands.
@@ -152,6 +155,18 @@ docker compose exec bot ./audio_ctl.sh disable-loopback
   </tr>
 </table>
 
+## Branding
+
+The project includes two logo variants:
+
+- [Logo with background](.github/assets/logo.png) for the Discord application icon,
+  bot avatar, and the `/join` and `/status` embed thumbnails.
+- [Transparent logo](.github/assets/logo-nobg.png) for the README header and layouts
+  that supply their own background.
+
+Embed thumbnails load the logo from this repository on GitHub. Set the application
+icon and bot avatar manually in the Discord Developer Portal when setting up your bot.
+
 ## Configuration
 
 | Variable | Default | Meaning |
@@ -221,6 +236,7 @@ src/                 Bot, audio helper, and Python dependencies
 Dockerfile           Runtime image
 compose.yaml         Host audio integration and runtime configuration
 .env.example         Shareable configuration template
+.github/assets/      Project logos and demo recordings
 .github/workflows/   Syntax checks, routing tests, and Docker build
 tests/               Audio routing regression tests
 ```
