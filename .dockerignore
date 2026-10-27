@@ -1,0 +1,7 @@
+# Only application source enters the build context. Never send the bot token.
+*
+!Dockerfile
+!src/
+!src/requirements.txt
+!src/bot.py
+!src/audio_ctl.sh

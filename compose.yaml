@@ -1,0 +1,43 @@
+name: discordspeaker
+
+services:
+  bot:
+    image: discordspeaker:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    init: true
+    restart: unless-stopped
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    env_file:
+      - .env
+    environment:
+      PULSE_SERVER: unix:/run/host/pulse/native
+      LC_ALL: C
+    volumes:
+      # Mount the directory so the client sees a recreated socket after PipeWire restarts.
+      - type: bind
+        source: ${PULSE_RUNTIME_DIR:-/run/user/1000/pulse}
+        target: /run/host/pulse
+        read_only: true
+        bind:
+          create_host_path: false
+    read_only: true
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      # Checks the host audio connection, not Discord login or voice-channel membership.
+      test: ["CMD", "pactl", "info"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
